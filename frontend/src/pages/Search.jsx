@@ -50,45 +50,23 @@ export default function Search() {
 
   const exportToCSV = (suppliers) => {
     const headers = [
-      "Name",
-      "City",
-      "State",
-      "UEI",
-      "CAGE Code",
-      "Registration Status",
-      "Expiration Date",
-      "Risk Score",
-      "Diversity Score",
-      "Certifications",
-      "Total Awards ($)",
-      "Contract Count",
-      "Agencies Served",
-      "Last Award Date",
+      "Name", "City", "State", "UEI", "CAGE Code",
+      "Registration Status", "Expiration Date", "Risk Score",
+      "Diversity Score", "Certifications", "Total Awards ($)",
+      "Contract Count", "Agencies Served", "Last Award Date",
     ];
-
     const rows = suppliers.map((s) => [
-      s.name,
-      s.city,
-      s.state,
-      s.uei,
-      s.cage_code,
-      s.registration_status,
-      s.expiration_date,
-      s.risk_score,
-      s.diversity_score,
-      (s.certifications || []).join("; "),
-      s.total_awards,
-      s.contract_count,
-      (s.agencies_served || []).join("; "),
-      s.last_award_date || "N/A",
+      s.name, s.city, s.state, s.uei, s.cage_code,
+      s.registration_status, s.expiration_date, s.risk_score,
+      s.diversity_score, (s.certifications || []).join("; "),
+      s.total_awards, s.contract_count,
+      (s.agencies_served || []).join("; "), s.last_award_date || "N/A",
     ]);
-
     const csvContent = [headers, ...rows]
       .map((row) =>
         row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(",")
       )
       .join("\n");
-
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -110,7 +88,6 @@ export default function Search() {
     });
   };
 
-  // Apply filters to suppliers
   const filteredSuppliers = suppliers.filter((supplier) => {
     if ((supplier.risk_score ?? 0) < filters.minRiskScore) return false;
     if (filters.certifications.length > 0) {
@@ -144,7 +121,7 @@ export default function Search() {
         {/* Search Bar */}
         <SearchBar onSearch={handleSearch} loading={loading} />
 
-        {/* Filter Panel — only show after search */}
+        {/* Filter Panel */}
         {searched && (
           <div>
             <FilterPanel filters={filters} onChange={setFilters} />
@@ -193,11 +170,28 @@ export default function Search() {
           </div>
         )}
 
-        {/* Loading */}
+        {/* Loading Skeleton */}
         {loading && (
-          <div className="text-center py-16">
-            <div className="text-4xl mb-4">⏳</div>
-            <p className="text-gray-500">Searching suppliers...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl shadow p-6 border border-gray-100 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                <div className="h-3 bg-gray-100 rounded w-1/2 mb-6"></div>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="h-16 bg-gray-100 rounded-lg"></div>
+                  <div className="h-16 bg-gray-100 rounded-lg"></div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="h-12 bg-gray-100 rounded-lg"></div>
+                  <div className="h-12 bg-gray-100 rounded-lg"></div>
+                  <div className="h-12 bg-gray-100 rounded-lg"></div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-6 bg-gray-100 rounded-full w-16"></div>
+                  <div className="h-6 bg-gray-100 rounded-full w-16"></div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -242,6 +236,26 @@ export default function Search() {
         )}
 
       </div>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-12 py-6 px-6">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-center text-xs text-gray-400 mb-2">
+            🏛️ Supplier Risk Scorer — Built with open US government data
+          </p>
+          <div className="flex justify-center gap-6 text-xs text-gray-400">
+            <a href="https://sam.gov" target="_blank" rel="noreferrer" className="hover:text-blue-500 transition-colors">
+              📡 SAM.gov
+            </a>
+            <a href="https://usaspending.gov" target="_blank" rel="noreferrer" className="hover:text-blue-500 transition-colors">
+              💰 USASpending.gov
+            </a>
+            <a href="https://sba.gov" target="_blank" rel="noreferrer" className="hover:text-blue-500 transition-colors">
+              🏢 SBA.gov
+            </a>
+          </div>
+        </div>
+      </footer>
 
       {/* Compare Bar */}
       {compareList.length > 0 && (
@@ -315,28 +329,41 @@ export default function Search() {
                 </thead>
                 <tbody>
                   {[
-                    { label: "📍 Location",       key: (s) => `${s.city}, ${s.state}` },
-                    { label: "🛡️ Risk Score",     key: (s) => `${s.risk_score}/100` },
-                    { label: "🌟 Diversity Score", key: (s) => `${s.diversity_score}/100` },
-                    { label: "🏅 Certifications",  key: (s) => (s.certifications || []).join(", ") || "None" },
-                    { label: "💰 Total Awards",    key: (s) => `$${(s.total_awards || 0).toLocaleString()}` },
-                    { label: "📋 Contracts",       key: (s) => s.contract_count || 0 },
-                    { label: "🏛️ Agencies",        key: (s) => (s.agencies_served || []).join(", ") || "None" },
-                    { label: "📅 Last Award",      key: (s) => s.last_award_date || "N/A" },
-                    { label: "🔖 CAGE Code",       key: (s) => s.cage_code || "N/A" },
-                    { label: "📆 Expires",         key: (s) => s.expiration_date || "N/A" },
-                  ].map((row) => (
-                    <tr key={row.label} className="border-t border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-4 font-medium text-gray-500">
-                        {row.label}
-                      </td>
-                      {compareList.map((s) => (
-                        <td key={s.uei} className="py-3 px-4 text-gray-700">
-                          {row.key(s)}
+                    { label: "📍 Location",       key: (s) => `${s.city}, ${s.state}`,                         highlight: false },
+                    { label: "🛡️ Risk Score",     key: (s) => `${s.risk_score}/100`,      value: (s) => s.risk_score,      highlight: true },
+                    { label: "🌟 Diversity Score", key: (s) => `${s.diversity_score}/100`, value: (s) => s.diversity_score, highlight: true },
+                    { label: "🏅 Certifications",  key: (s) => (s.certifications || []).join(", ") || "None",  highlight: false },
+                    { label: "💰 Total Awards",    key: (s) => `$${(s.total_awards || 0).toLocaleString()}`,   value: (s) => s.total_awards,    highlight: true },
+                    { label: "📋 Contracts",       key: (s) => s.contract_count || 0,      value: (s) => s.contract_count,  highlight: true },
+                    { label: "🏛️ Agencies",        key: (s) => (s.agencies_served || []).join(", ") || "None", highlight: false },
+                    { label: "📅 Last Award",      key: (s) => s.last_award_date || "N/A",                     highlight: false },
+                    { label: "🔖 CAGE Code",       key: (s) => s.cage_code || "N/A",                           highlight: false },
+                    { label: "📆 Expires",         key: (s) => s.expiration_date || "N/A",                     highlight: false },
+                  ].map((row) => {
+                    const best = row.highlight
+                      ? Math.max(...compareList.map((s) => row.value(s) || 0))
+                      : null;
+                    return (
+                      <tr key={row.label} className="border-t border-gray-100 hover:bg-gray-50">
+                        <td className="py-3 px-4 font-medium text-gray-500">
+                          {row.label}
                         </td>
-                      ))}
-                    </tr>
-                  ))}
+                        {compareList.map((s) => {
+                          const isBest = row.highlight && row.value(s) === best && best > 0;
+                          return (
+                            <td
+                              key={s.uei}
+                              className={`py-3 px-4 font-medium ${
+                                isBest ? "text-green-600 bg-green-50" : "text-gray-700"
+                              }`}
+                            >
+                              {isBest ? "⭐ " : ""}{row.key(s)}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
