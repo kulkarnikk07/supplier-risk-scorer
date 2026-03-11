@@ -33,12 +33,13 @@ export default function Search() {
   // Apply filters to suppliers
   const filteredSuppliers = suppliers.filter((supplier) => {
     // Filter by min risk score
-    if (supplier.risk_score < filters.minRiskScore) return false;
+    if ((supplier.risk_score ?? 0) < filters.minRiskScore) return false;
 
-    // Filter by certifications
+    // Filter by certifications (safely handle missing certifications)
     if (filters.certifications.length > 0) {
+      const supplierCerts = supplier.certifications || [];
       const hasCert = filters.certifications.some((cert) =>
-        supplier.certifications.includes(cert)
+        supplierCerts.includes(cert)
       );
       if (!hasCert) return false;
     }

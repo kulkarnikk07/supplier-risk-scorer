@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from services.sam_gov import search_suppliers
+from services.scorer import score_supplier
 
 app = FastAPI(title="Supplier Risk Scorer API", version="0.1.0")
 
-# Allow React frontend to talk to this backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -26,15 +26,36 @@ async def get_suppliers(
     naics_code: str = Query(None, description="NAICS code e.g. 541512"),
     state: str = Query(None, description="State code e.g. VA, TX, CA"),
     business_type: str = Query(None, description="Business type code"),
-    limit: int = Query(10, description="Number of results to return")
 ):
     """
-    Search for suppliers by NAICS code, state, and business type
+    Search for suppliers and return them with risk + diversity scores
     """
+    # Step 1 — Get suppliers from SAM.gov
     results = await search_suppliers(
         naics_code=naics_code,
         state=state,
         business_type=business_type,
-        limit=limit
     )
-    return results
+
+    # Step 2 — Check for errors
+    if "error" in results:
+        return results
+
+    # Step 3 — Score each supplier
+    scored_suppliers = []
+    for supplier in results["suppliers"]:
+        scored = score_supplier(supplier)
+        scored_suppliers.append(scored)
+
+    return {
+        "total": results["total"],
+        "suppliers": scored_suppliers
+    }
+
+@app.get("/api/suppliers/score")
+async def score_single(uei: str = Query(..., description="UEI of supplier to score")):
+    """
+    Score a single supplier by UEI
+    """
+    # Placeholder — will connect USASpending in Stage 6
+    return {"message": f"Scoring supplier {uei} — coming in Stage 6!"}
