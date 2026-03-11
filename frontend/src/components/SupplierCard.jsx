@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import RiskScoreBadge from "./RiskScoreBadge";
 
-export default function SupplierCard({ supplier }) {
+export default function SupplierCard({ supplier, onCompare, isComparing }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -27,8 +27,26 @@ export default function SupplierCard({ supplier }) {
   return (
     <div
       onClick={handleClick}
-      className="bg-white rounded-xl shadow hover:shadow-md transition-shadow p-6 border border-gray-100 cursor-pointer"
+      className={`bg-white rounded-xl shadow hover:shadow-md transition-shadow p-6 border cursor-pointer ${
+        isComparing ? "border-blue-400 ring-2 ring-blue-200" : "border-gray-100"
+      }`}
     >
+      {/* Compare Checkbox */}
+      <div
+        className="flex justify-end mb-2"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isComparing || false}
+            onChange={() => onCompare(supplier)}
+            className="accent-blue-600"
+          />
+          Compare
+        </label>
+      </div>
+
       {/* Header */}
       <div className="mb-4">
         <h3 className="text-lg font-bold text-gray-800">
