@@ -2,6 +2,7 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from services.sam_gov import search_suppliers
 from services.scorer import score_supplier
+from services.ai_summary import generate_supplier_summary
 
 app = FastAPI(title="Supplier Risk Scorer API", version="0.1.0")
 
@@ -59,3 +60,11 @@ async def score_single(uei: str = Query(..., description="UEI of supplier to sco
     """
     # Placeholder — will connect USASpending in Stage 6
     return {"message": f"Scoring supplier {uei} — coming in Stage 6!"}
+
+@app.post("/api/suppliers/summary")
+async def get_supplier_summary(supplier: dict):
+    """
+    Generate an AI summary for a supplier using Claude
+    """
+    summary = await generate_supplier_summary(supplier)
+    return {"summary": summary}
