@@ -1,6 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import RiskScoreBadge from "./RiskScoreBadge";
 
 export default function SupplierCard({ supplier }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/supplier/${supplier.uei}`, { state: { supplier } });
+  };
+
   const formatCurrency = (amount) => {
     if (!amount) return "N/A";
     if (amount >= 1000000)
@@ -10,7 +17,6 @@ export default function SupplierCard({ supplier }) {
     return `$${amount}`;
   };
 
-  // Safely handle missing fields
   const certifications = supplier.certifications || [];
   const agenciesServed = supplier.agencies_served || [];
   const contractCount = supplier.contract_count || 0;
@@ -19,11 +25,15 @@ export default function SupplierCard({ supplier }) {
   const diversityScore = supplier.diversity_score ?? 0;
 
   return (
-    <div className="bg-white rounded-xl shadow hover:shadow-md transition-shadow p-6 border border-gray-100">
-
+    <div
+      onClick={handleClick}
+      className="bg-white rounded-xl shadow hover:shadow-md transition-shadow p-6 border border-gray-100 cursor-pointer"
+    >
       {/* Header */}
       <div className="mb-4">
-        <h3 className="text-lg font-bold text-gray-800">{supplier.name || "Unknown"}</h3>
+        <h3 className="text-lg font-bold text-gray-800">
+          {supplier.name || "Unknown"}
+        </h3>
         <p className="text-sm text-gray-500">
           📍 {supplier.city || "N/A"}, {supplier.state || "N/A"} &nbsp;|&nbsp;
           🔖 CAGE: {supplier.cage_code || "N/A"} &nbsp;|&nbsp;
@@ -75,29 +85,17 @@ export default function SupplierCard({ supplier }) {
         )}
       </div>
 
-      {/* Risk Breakdown */}
-      {supplier.risk_breakdown && (
-        <div className="mb-4 border-t pt-3">
-          <p className="text-xs font-medium text-gray-500 mb-2">Risk Score Breakdown</p>
-          <div className="space-y-1">
-            {Object.values(supplier.risk_breakdown).map((item, index) => (
-              <div key={index} className="flex justify-between text-xs">
-                <span className="text-gray-500">{item.note}</span>
-                <span className="font-medium text-gray-700">
-                  {item.points}/{item.max}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Footer */}
       <div className="flex justify-between items-center text-xs text-gray-400 border-t pt-3">
         <span>Expires: {supplier.expiration_date || "N/A"}</span>
         <span className="text-green-600 font-medium">
           ● {supplier.registration_status || "Unknown"}
         </span>
+      </div>
+
+      {/* Click hint */}
+      <div className="text-center text-xs text-blue-400 mt-2">
+        Click to view full profile →
       </div>
     </div>
   );

@@ -1,19 +1,26 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import FilterPanel from "../components/FilterPanel";
 import SupplierCard from "../components/SupplierCard";
 import { searchSuppliers } from "../services/api";
 
 export default function Search() {
-  const [suppliers, setSuppliers] = useState([]);
-  const [total, setTotal] = useState(0);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [suppliers, setSuppliers] = useState(
+    location.state?.suppliers || []
+  );
+  const [total, setTotal] = useState(location.state?.total || 0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searched, setSearched] = useState(false);
-  const [filters, setFilters] = useState({
-    minRiskScore: 0,
-    certifications: [],
-  });
+  const [searched, setSearched] = useState(
+    location.state?.searched || false
+  );
+  const [filters, setFilters] = useState(
+    location.state?.filters || { minRiskScore: 0, certifications: [] }
+  );
 
   const handleSearch = async (params) => {
     setLoading(true);
@@ -23,6 +30,16 @@ export default function Search() {
       setSuppliers(data.suppliers);
       setTotal(data.total);
       setSearched(true);
+      // Save state for back navigation
+      navigate(".", {
+        state: {
+          suppliers: data.suppliers,
+          total: data.total,
+          searched: true,
+          filters,
+        },
+        replace: true,
+      });
     } catch (err) {
       setError("Failed to fetch suppliers. Please try again.");
     } finally {
@@ -74,7 +91,9 @@ export default function Search() {
             <FilterPanel filters={filters} onChange={setFilters} />
             <div className="flex justify-end mb-4">
               <button
-                onClick={() => setFilters({ minRiskScore: 0, certifications: [] })}
+                onClick={() =>
+                  setFilters({ minRiskScore: 0, certifications: [] })
+                }
                 className="text-sm text-gray-500 hover:text-red-500 border border-gray-300 hover:border-red-400 px-4 py-2 rounded-lg transition-colors"
               >
                 🔄 Reset Filters
@@ -94,8 +113,10 @@ export default function Search() {
         {searched && !loading && (
           <div className="flex justify-between items-center mb-4">
             <p className="text-gray-600 text-sm">
-              Showing <span className="font-bold">{filteredSuppliers.length}</span> of{" "}
-              <span className="font-bold">{total.toLocaleString()}</span> suppliers
+              Showing{" "}
+              <span className="font-bold">{filteredSuppliers.length}</span> of{" "}
+              <span className="font-bold">{total.toLocaleString()}</span>{" "}
+              suppliers
             </p>
             <p className="text-gray-400 text-xs">
               Filtered by risk score ≥ {filters.minRiskScore}

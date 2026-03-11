@@ -1,0 +1,106 @@
+{
+  "X3VAV4RKB3J7": {
+    "total_awards": 4200000,
+    "contract_count": 12,
+    "agencies_served": ["DoD", "HHS"],
+    "last_award_date": "2024-11-15",
+    "contracts": [
+      { "agency": "DoD", "amount": 2100000, "date": "2024-11-15", "description": "IT Systems Support" },
+      { "agency": "HHS", "amount": 1500000, "date": "2024-06-01", "description": "Data Analytics Services" },
+      { "agency": "DoD", "amount": 600000,  "date": "2023-09-10", "description": "Cybersecurity Consulting" }
+    ]
+  },
+  "VMPJF3P46H73": {
+    "total_awards": 12500000,
+    "contract_count": 28,
+    "agencies_served": ["DoD", "DHS", "GSA"],
+    "last_award_date": "2025-01-20",
+    "contracts": [
+      { "agency": "DoD", "amount": 5000000, "date": "2025-01-20", "description": "Software Development" },
+      { "agency": "DHS", "amount": 4500000, "date": "2024-08-15", "description": "Network Infrastructure" },
+      { "agency": "GSA", "amount": 3000000, "date": "2024-03-10", "description": "Cloud Migration" }
+    ]
+  },
+  "QRUGA5ZCLXR3": {
+    "total_awards": 890000,
+    "contract_count": 5,
+    "agencies_served": ["HHS"],
+    "last_award_date": "2024-07-01",
+    "contracts": [
+      { "agency": "HHS", "amount": 500000, "date": "2024-07-01", "description": "Health IT Consulting" },
+      { "agency": "HHS", "amount": 390000, "date": "2023-12-15", "description": "Program Support Services" }
+    ]
+  },
+  "QK4CTLQ93MQ5": {
+    "total_awards": 2100000,
+    "contract_count": 9,
+    "agencies_served": ["GSA", "DoE"],
+    "last_award_date": "2024-10-05",
+    "contracts": [
+      { "agency": "GSA", "amount": 1200000, "date": "2024-10-05", "description": "Training & Development" },
+      { "agency": "DoE", "amount": 900000,  "date": "2024-04-20", "description": "eLearning Solutions" }
+    ]
+  },
+  "HT66X17MV8B1": {
+    "total_awards": 150000,
+    "contract_count": 2,
+    "agencies_served": ["DoD"],
+    "last_award_date": "2023-05-10",
+    "contracts": [
+      { "agency": "DoD", "amount": 100000, "date": "2023-05-10", "description": "Fitness Program Support" },
+      { "agency": "DoD", "amount": 50000,  "date": "2022-11-01", "description": "Wellness Consulting" }
+    ]
+  },
+  "GHFVUQJQDN44": {
+    "total_awards": 780000,
+    "contract_count": 4,
+    "agencies_served": ["GSA"],
+    "last_award_date": "2024-08-20",
+    "contracts": [
+      { "agency": "GSA", "amount": 450000, "date": "2024-08-20", "description": "Graphic Design Services" },
+      { "agency": "GSA", "amount": 330000, "date": "2023-10-15", "description": "Brand & Communications" }
+    ]
+  },
+  "GQ1DTBA3AS53": {
+    "total_awards": 6500000,
+    "contract_count": 17,
+    "agencies_served": ["DoD", "DHS"],
+    "last_award_date": "2025-02-01",
+    "contracts": [
+      { "agency": "DoD", "amount": 3500000, "date": "2025-02-01", "description": "Cybersecurity Operations" },
+      { "agency": "DHS", "amount": 2000000, "date": "2024-09-15", "description": "Network Security" },
+      { "agency": "DoD", "amount": 1000000, "date": "2024-01-10", "description": "IT Infrastructure" }
+    ]
+  },
+  "GPPCZZ2SCH74": {
+    "total_awards": 1800000,
+    "contract_count": 7,
+    "agencies_served": ["HHS", "DoE"],
+    "last_award_date": "2024-12-01",
+    "contracts": [
+      { "agency": "HHS", "amount": 1000000, "date": "2024-12-01", "description": "Program Management" },
+      { "agency": "DoE", "amount": 800000,  "date": "2024-05-20", "description": "Research Support" }
+    ]
+  },
+  "G8Z8GTP46AM3": {
+    "total_awards": 3200000,
+    "contract_count": 11,
+    "agencies_served": ["DoD", "VA"],
+    "last_award_date": "2024-11-30",
+    "contracts": [
+      { "agency": "DoD", "amount": 2000000, "date": "2024-11-30", "description": "Strategic Operations" },
+      { "agency": "VA",  "amount": 1200000, "date": "2024-06-15", "description": "Veterans Support Services" }
+    ]
+  },
+  "FXMCW1U8WNP4": {
+    "total_awards": 5100000,
+    "contract_count": 15,
+    "agencies_served": ["GSA", "DoD", "HHS"],
+    "last_award_date": "2025-01-10",
+    "contracts": [
+      { "agency": "GSA", "amount": 2000000, "date": "2025-01-10", "description": "AI Solutions Development" },
+      { "agency": "DoD", "amount": 1800000, "date": "2024-07-20", "description": "Machine Learning Services" },
+      { "agency": "HHS", "amount": 1300000, "date": "2024-02-15", "description": "Data Science Support" }
+    ]
+  }
+}
