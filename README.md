@@ -2,19 +2,24 @@
 
 An AI-powered federal supplier discovery and risk scoring tool built with open US government data.
 
-Search, evaluate, and compare federal vendors using real data from SAM.gov, USASpending.gov, and the SBA — with AI-generated procurement summaries powered by Claude.
+Search, evaluate, and compare federal vendors using real data from SAM.gov, USASpending.gov, and the SBA — with AI-generated procurement summaries and a live procurement assistant powered by Claude.
+
+> Built by [Kedar Kulkarni](https://www.linkedin.com/in/kedar-kulkarni/)
 
 ---
 
 ## 🖼️ Features
 
-- 🔍 **Search suppliers** by NAICS code and state
-- 🛡️ **Risk scoring** based on registration status, CAGE code, UEI, and expiration
-- 🌟 **Diversity scoring** for 8(a), WOSB, HUBZone, SDVOSB, and other certifications
-- 📊 **Side-by-side comparison** of up to 3 suppliers with best-score highlighting
-- ⬇️ **CSV export** of search results or comparisons
-- 🤖 **AI summaries** powered by Claude — plain English procurement analysis
-- 💀 **Skeleton loading** and responsive card UI
+- 🔍 **Searchable NAICS dropdown** — Browse and filter top 50 federal NAICS codes by code or description
+- 🛡️ **Risk scoring** — Based on registration status, CAGE code, UEI, expiration, and contract history
+- 🌟 **Diversity scoring** — For 8(a), WOSB, HUBZone, SDVOSB, and other certifications
+- 📊 **Side-by-side comparison** — Compare up to 3 suppliers with best-score highlighting ⭐
+- ⬇️ **CSV export** — Export search results or comparisons for reporting
+- 🤖 **AI summaries** — Plain English procurement analysis powered by Claude
+- 💬 **Procurement chat assistant** — Floating chat bubble powered by Claude, answers questions about suppliers on screen and general federal procurement topics
+- 💀 **Skeleton loading** — Animated card placeholders while searching
+- 🔄 **Reset filters** — Clears filters and search results in one click
+- ℹ️ **About modal** — Project info, data sources, tech stack, developer info, and disclaimer
 
 ---
 
@@ -55,11 +60,13 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Then open `.env` and add your API keys:
+Then open `.env` and add your API keys (no quotes around values):
 ```
 SAM_API_KEY=your_sam_gov_api_key_here
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
 ```
+
+> ⚠️ **Important:** Do not use quotes around API key values in `.env`. Use `KEY=value` not `KEY="value"`.
 
 ### 4. Start the backend
 ```bash
@@ -92,6 +99,7 @@ Frontend runs at: http://localhost:5173
 1. Go to [https://console.anthropic.com](https://console.anthropic.com)
 2. Create an account and generate an API key
 3. Add to your `.env` as `ANTHROPIC_API_KEY`
+4. Used for both AI supplier summaries and the chat assistant
 
 ---
 
@@ -104,6 +112,8 @@ In `frontend/src/services/api.js`, `USE_MOCK` is set to `true` by default:
 const USE_MOCK = true; // Switch to false for real API
 ```
 
+Mock data includes 10 real SAM.gov vendors enriched with realistic scores, certifications, contract history, and agency relationships.
+
 See [SWITCHING_TO_REAL_APIS.md](./SWITCHING_TO_REAL_APIS.md) for full instructions on enabling live data.
 
 ---
@@ -112,19 +122,29 @@ See [SWITCHING_TO_REAL_APIS.md](./SWITCHING_TO_REAL_APIS.md) for full instructio
 ```
 supplier-risk-scorer/
 ├── backend/
-│   ├── main.py               # FastAPI app + endpoints
+│   ├── main.py                   # FastAPI app + all endpoints
 │   ├── requirements.txt
 │   ├── .env.example
 │   └── services/
-│       ├── sam_gov.py        # SAM.gov API integration
-│       ├── scorer.py         # Risk + diversity scoring engine
-│       └── ai_summary.py     # Claude AI summary generation
+│       ├── sam_gov.py            # SAM.gov API integration
+│       ├── scorer.py             # Risk + diversity scoring engine
+│       └── ai_summary.py        # Claude AI summary generation
 ├── frontend/
 │   └── src/
-│       ├── components/       # SearchBar, SupplierCard, FilterPanel, RiskScoreBadge
-│       ├── pages/            # Search, SupplierDetail
-│       ├── services/api.js   # API client (mock/real toggle)
-│       └── mock/             # Mock data (suppliers, spending, SBA)
+│       ├── components/
+│       │   ├── SearchBar.jsx     # Searchable NAICS dropdown + state selector
+│       │   ├── SupplierCard.jsx  # Supplier card with compare checkbox
+│       │   ├── FilterPanel.jsx   # Risk score + certification filters
+│       │   ├── RiskScoreBadge.jsx
+│       │   └── ChatBubble.jsx    # Floating AI chat assistant
+│       ├── pages/
+│       │   ├── Search.jsx        # Main search page with all features
+│       │   └── SupplierDetail.jsx
+│       ├── data/
+│       │   └── naics.js          # Top 50 federal NAICS codes
+│       ├── services/api.js       # API client (mock/real toggle)
+│       └── mock/                 # Mock data (suppliers, spending, SBA)
+├── render.yaml                   # Render.com deployment config
 ├── README.md
 └── SWITCHING_TO_REAL_APIS.md
 ```
@@ -148,15 +168,38 @@ supplier-risk-scorer/
 
 ---
 
-## 🛠️ Tech Stack
+## 💬 Procurement Chat Assistant
 
-- **Frontend:** React + Vite + Tailwind CSS v4
-- **Backend:** Python + FastAPI + uvicorn
-- **AI:** Anthropic Claude API (claude-sonnet-4-20250514)
-- **Data:** SAM.gov, USASpending.gov, SBA DSBS
+The floating chat bubble (bottom-right) is powered by Claude and can answer:
+- Questions about the suppliers currently shown on screen (e.g. "Which supplier has the highest risk score?")
+- General federal procurement questions (e.g. "What is an 8(a) certification?", "How does HUBZone work?")
+- Comparison questions (e.g. "Which supplier would be best for a DoD contract?")
+
+The assistant is context-aware — it receives the current supplier data with every message.
 
 ---
 
-## 📄 License
+## 🛠️ Tech Stack
 
-MIT — free to use, fork, and build on.
+| Layer | Technology |
+|---|---|
+| Frontend | React + Vite + Tailwind CSS v4 |
+| Backend | Python + FastAPI + uvicorn |
+| AI | Anthropic Claude (claude-sonnet-4-5) |
+| Vendor Data | SAM.gov API |
+| Contract Data | USASpending.gov API |
+| Certifications | SBA DSBS API |
+| Deployment | Render (backend) + Vercel (frontend) |
+
+---
+
+## ⚠️ Disclaimer
+
+This project is created for educational and portfolio purposes using publicly available data from US government sources including SAM.gov, USASpending.gov, and the SBA. The information provided is for general guidance only and should not be considered official procurement advice. Risk and diversity scores are algorithmically generated estimates and do not represent official government assessments. Always verify supplier information directly through official government systems before making procurement decisions.
+
+---
+
+## 👨‍💻 Developer
+
+**Kedar Kulkarni**  
+🔗 [linkedin.com/in/kedar-kulkarni](https://www.linkedin.com/in/kedar-kulkarni/)
