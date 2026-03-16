@@ -8,14 +8,7 @@ from pathlib import Path
 import os
 import anthropic
 
-load_dotenv(dotenv_path=Path(__file__).parent / ".env")
-env_path = Path(__file__).parent / ".env"
-print("ENV FILE PATH:", env_path)
-print("ENV FILE EXISTS:", env_path.exists())
-with open(env_path) as f:
-    print("ENV FILE CONTENTS FIRST 50 CHARS:", f.read()[:50])
-
-print("API KEY LOADED:", os.getenv("ANTHROPIC_API_KEY")[:25] if os.getenv("ANTHROPIC_API_KEY") else "NOT FOUND")
+load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=False)
 
 app = FastAPI(title="Supplier Risk Scorer API", version="0.1.0")
 
@@ -87,11 +80,7 @@ async def chat(request: Request):
     messages = body.get("messages", [])
     system_prompt = body.get("system", "")
 
-    # client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-
-    key = os.getenv("ANTHROPIC_API_KEY")
-    print(f"CHAT KEY: '{key[:15] if key else 'NOT FOUND'}'")
-    client = anthropic.Anthropic(api_key=key)
+    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
     response = client.messages.create(
         model="claude-sonnet-4-5",
