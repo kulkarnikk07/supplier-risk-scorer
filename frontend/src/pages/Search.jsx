@@ -4,6 +4,7 @@ import SearchBar from "../components/SearchBar";
 import FilterPanel from "../components/FilterPanel";
 import SupplierCard from "../components/SupplierCard";
 import { searchSuppliers } from "../services/api";
+import ChatBubble from "../components/ChatBubble";
 
 export default function Search() {
   const navigate = useNavigate();
@@ -127,9 +128,13 @@ export default function Search() {
             <FilterPanel filters={filters} onChange={setFilters} />
             <div className="flex justify-end mb-4">
               <button
-                onClick={() =>
-                  setFilters({ minRiskScore: 0, certifications: [] })
-                }
+                onClick={() => {
+                  setFilters({ minRiskScore: 0, certifications: [] });
+                  setSuppliers([]);
+                  setTotal(0);
+                  setSearched(false);
+                  setCompareList([]);
+                }}
                 className="text-sm text-gray-500 hover:text-red-500 border border-gray-300 hover:border-red-400 px-4 py-2 rounded-lg transition-colors"
               >
                 🔄 Reset Filters
@@ -386,6 +391,8 @@ export default function Search() {
           </div>
         </div>
       )}
+      {/* Chat Bubble */}
+      <ChatBubble suppliers={filteredSuppliers} />
 
     </div>
   );

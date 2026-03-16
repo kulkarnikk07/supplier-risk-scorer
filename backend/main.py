@@ -1,15 +1,28 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from services.sam_gov import search_suppliers
 from services.scorer import score_supplier
 from services.ai_summary import generate_supplier_summary
+from dotenv import load_dotenv
+from pathlib import Path
+import os
+import anthropic
+
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
+env_path = Path(__file__).parent / ".env"
+print("ENV FILE PATH:", env_path)
+print("ENV FILE EXISTS:", env_path.exists())
+with open(env_path) as f:
+    print("ENV FILE CONTENTS FIRST 50 CHARS:", f.read()[:50])
+
+print("API KEY LOADED:", os.getenv("ANTHROPIC_API_KEY")[:25] if os.getenv("ANTHROPIC_API_KEY") else "NOT FOUND")
 
 app = FastAPI(title="Supplier Risk Scorer API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -31,18 +44,15 @@ async def get_suppliers(
     """
     Search for suppliers and return them with risk + diversity scores
     """
-    # Step 1 — Get suppliers from SAM.gov
     results = await search_suppliers(
         naics_code=naics_code,
         state=state,
         business_type=business_type,
     )
 
-    # Step 2 — Check for errors
     if "error" in results:
         return results
 
-    # Step 3 — Score each supplier
     scored_suppliers = []
     for supplier in results["suppliers"]:
         scored = score_supplier(supplier)
@@ -58,7 +68,6 @@ async def score_single(uei: str = Query(..., description="UEI of supplier to sco
     """
     Score a single supplier by UEI
     """
-    # Placeholder — will connect USASpending in Stage 6
     return {"message": f"Scoring supplier {uei} — coming in Stage 6!"}
 
 @app.post("/api/suppliers/summary")
@@ -68,3 +77,27 @@ async def get_supplier_summary(supplier: dict):
     """
     summary = await generate_supplier_summary(supplier)
     return {"summary": summary}
+
+@app.post("/api/chat")
+async def chat(request: Request):
+    """
+    Chat endpoint for the procurement assistant
+    """
+    body = await request.json()
+    messages = body.get("messages", [])
+    system_prompt = body.get("system", "")
+
+    # client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+    key = os.getenv("ANTHROPIC_API_KEY")
+    print(f"CHAT KEY: '{key[:15] if key else 'NOT FOUND'}'")
+    client = anthropic.Anthropic(api_key=key)
+
+    response = client.messages.create(
+        model="claude-sonnet-4-5",
+        max_tokens=1000,
+        system=system_prompt,
+        messages=messages,
+    )
+
+    return {"reply": response.content[0].text}
