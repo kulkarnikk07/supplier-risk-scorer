@@ -4,7 +4,8 @@ An AI-powered federal supplier discovery and risk scoring tool built with open U
 
 Search, evaluate, and compare federal vendors using real data from SAM.gov, USASpending.gov, and the SBA — with AI-generated procurement summaries and a live procurement assistant powered by Claude.
 
-> Built by [Kedar Kulkarni](https://www.linkedin.com/in/kedar-kulkarni/)
+🎬 Watch the Demo (1080p): [Supplier-Risk-Scorer Demo](https://youtu.be/zzUjJVMPe-Y)
+ Built by [Kedar Kulkarni](https://www.linkedin.com/in/kedar-kulkarni/)
 
 ---
 
